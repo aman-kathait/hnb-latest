@@ -1,10 +1,11 @@
+"use client"
 import React, { useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader } from './ui/dialog'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { readFileAsDataURL } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react'; // Added X icon
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,10 +30,25 @@ const CreatePost = ({ open, setOpen }) => {
     }
   }
 
+  const removeImageHandler = () => {
+    setFile("");
+    setImagePreview("");
+    // Reset the file input
+    if (imageRef.current) {
+      imageRef.current.value = "";
+    }
+  }
+
   const createPostHandler = async (e) => {
+    if (!caption.trim() && !imagePreview) {
+      toast.error("Please add a caption or select an image");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("caption", caption);
+    if (caption.trim()) formData.append("caption", caption);
     if (imagePreview) formData.append("image", file);
+    
     try {
       setLoading(true);
       const res = await axios.post('http://localhost:8000/api/v1/post/addpost', formData, {
@@ -45,9 +61,12 @@ const CreatePost = ({ open, setOpen }) => {
         dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);
         setOpen(false);
+        // Reset form
+        setCaption("");
+        removeImageHandler();
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -67,31 +86,56 @@ const CreatePost = ({ open, setOpen }) => {
             <span className='text-gray-600 text-xs'>Bio here...</span>
           </div>
         </div>
-        <Textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="focus-visible:ring-transparent border-none" placeholder="Write a caption..." />
+        <Textarea 
+          value={caption} 
+          onChange={(e) => setCaption(e.target.value)} 
+          className="focus-visible:ring-transparent border-none" 
+          placeholder="Write a caption..." 
+        />
         {
           imagePreview && (
-            <div className='w-full h-64 flex items-center justify-center'>
+            <div className='w-full h-64 flex items-center justify-center relative'>
               <img src={imagePreview} alt="preview_img" className='object-cover h-full w-full rounded-md' />
+              <button 
+                onClick={removeImageHandler}
+                className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70"
+                aria-label="Remove image"
+              >
+                <X size={18} />
+              </button>
             </div>
           )
         }
-        <input ref={imageRef} type='file' className='hidden' onChange={fileChangeHandler} />
-        <Button onClick={() => imageRef.current.click()} className='w-fit mx-auto bg-[#0095F6] hover:bg-[#258bcf] '>Select from computer</Button>
-        {
-          imagePreview && (
-            loading ? (
-              <Button>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Please wait
-              </Button>
-            ) : (
-              <Button onClick={createPostHandler} type="submit" className="w-full">Post</Button>
-            )
+        <input 
+          ref={imageRef} 
+          type='file' 
+          className='hidden' 
+          onChange={fileChangeHandler} 
+          accept="image/*"
+        />
+        <Button 
+          onClick={() => imageRef.current.click()} 
+          className='w-fit mx-auto bg-[#0095F6] hover:bg-[#258bcf]'
+          variant={imagePreview ? "outline" : "default"}
+        >
+          {imagePreview ? "Change Image" : "Select from computer"}
+        </Button>
+        
+        {(caption.trim() || imagePreview) && (
+          loading ? (
+            <Button disabled>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Please wait
+            </Button>
+          ) : (
+            <Button onClick={createPostHandler} className="w-full">
+              Post
+            </Button>
           )
-        }
+        )}
       </DialogContent>
     </Dialog>
   )
 }
 
-export default CreatePost
+export default CreatePost;

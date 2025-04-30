@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
@@ -8,17 +9,17 @@ import CommentDialog from './CommentDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from 'sonner'
-import { setPosts, setSelectedPost } from '@/redux/postSlice'
+import { setAnnouncements, setSelectedAnnouncement } from '@/redux/announcementSlice' // TODO: Create this slice
 import { Badge } from './ui/badge'
 
-const Post = ({ post }) => {
+const Announcement = ({ announcement }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
     const { user } = useSelector(store => store.auth);
-    const { posts } = useSelector(store => store.post);
-    const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
-    const [postLike, setPostLike] = useState(post.likes.length);
-    const [comment, setComment] = useState(post.comments);
+    const { announcements } = useSelector(store => store.announcement); // TODO: Add to store
+    const [liked, setLiked] = useState(announcement.likes.includes(user?._id) || false);
+    const [announcementLike, setAnnouncementLike] = useState(announcement.likes.length);
+    const [comment, setComment] = useState(announcement.comments);
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
@@ -30,22 +31,23 @@ const Post = ({ post }) => {
         }
     }
 
+    // TODO: Update API endpoint to announcement-specific endpoints
     const likeOrDislikeHandler = async () => {
         try {
             const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`http://localhost:8000/api/v1/post/${post._id}/${action}`, { withCredentials: true });
+            const res = await axios.get(`http://localhost:8000/api/v1/announcement/${announcement._id}/${action}`, { withCredentials: true });
             if (res.data.success) {
-                const updatedLikes = liked ? postLike - 1 : postLike + 1;
-                setPostLike(updatedLikes);
+                const updatedLikes = liked ? announcementLike - 1 : announcementLike + 1;
+                setAnnouncementLike(updatedLikes);
                 setLiked(!liked);
 
-                const updatedPostData = posts.map(p =>
-                    p._id === post._id ? {
-                        ...p,
-                        likes: liked ? p.likes.filter(id => id !== user._id) : [...p.likes, user._id]
-                    } : p
+                const updatedAnnouncementData = announcements.map(a =>
+                    a._id === announcement._id ? {
+                        ...a,
+                        likes: liked ? a.likes.filter(id => id !== user._id) : [...a.likes, user._id]
+                    } : a
                 );
-                dispatch(setPosts(updatedPostData));
+                dispatch(setAnnouncements(updatedAnnouncementData));
                 toast.success(res.data.message);
             }
         } catch (error) {
@@ -53,9 +55,10 @@ const Post = ({ post }) => {
         }
     }
 
+    // TODO: Update API endpoint to announcement-specific endpoints
     const commentHandler = async () => {
         try {
-            const res = await axios.post(`http://localhost:8000/api/v1/post/${post._id}/comment`, { text }, {
+            const res = await axios.post(`http://localhost:8000/api/v1/announcement/${announcement._id}/comment`, { text }, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -65,11 +68,11 @@ const Post = ({ post }) => {
                 const updatedCommentData = [...comment, res.data.comment];
                 setComment(updatedCommentData);
 
-                const updatedPostData = posts.map(p =>
-                    p._id === post._id ? { ...p, comments: updatedCommentData } : p
+                const updatedAnnouncementData = announcements.map(a =>
+                    a._id === announcement._id ? { ...a, comments: updatedCommentData } : a
                 );
 
-                dispatch(setPosts(updatedPostData));
+                dispatch(setAnnouncements(updatedAnnouncementData));
                 toast.success(res.data.message);
                 setText("");
             }
@@ -78,12 +81,13 @@ const Post = ({ post }) => {
         }
     }
 
-    const deletePostHandler = async () => {
+    // TODO: Update API endpoint to announcement-specific endpoints
+    const deleteAnnouncementHandler = async () => {
         try {
-            const res = await axios.delete(`http://localhost:8000/api/v1/post/delete/${post?._id}`, { withCredentials: true })
+            const res = await axios.delete(`http://localhost:8000/api/v1/announcement/delete/${announcement?._id}`, { withCredentials: true })
             if (res.data.success) {
-                const updatedPostData = posts.filter((postItem) => postItem?._id !== post?._id);
-                dispatch(setPosts(updatedPostData));
+                const updatedAnnouncementData = announcements.filter((announcementItem) => announcementItem?._id !== announcement?._id);
+                dispatch(setAnnouncements(updatedAnnouncementData));
                 toast.success(res.data.message);
             }
         } catch (error) {
@@ -92,9 +96,10 @@ const Post = ({ post }) => {
         }
     }
 
+    // TODO: Update API endpoint to announcement-specific endpoints
     const bookmarkHandler = async () => {
         try {
-            const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
+            const res = await axios.get(`http://localhost:8000/api/v1/announcement/${announcement?._id}/bookmark`, {withCredentials:true});
             if(res.data.success){
                 toast.success(res.data.message);
             }
@@ -105,22 +110,26 @@ const Post = ({ post }) => {
 
     return (
         <div className='my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24'>
-            {/* Post Header */}
+            {/* Announcement Header */}
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <div>
-                        <Avatar className="w-10 h-10 rounded-full bg-green-500 text-white font-bold text-sm flex items-center justify-center">
-                            <AvatarImage src={post.author?.profilePicture} alt="post_image" />
-                            <AvatarFallback>CN</AvatarFallback>
+                        <Avatar className="w-10 h-10 rounded-full bg-blue-500 text-white font-bold text-sm flex items-center justify-center">
+                            <AvatarImage src={announcement.author?.profilePicture} alt="announcement_image" />
+                            <AvatarFallback>AN</AvatarFallback>
                         </Avatar>
                     </div>
                     <div className='flex flex-col'>
                         <div className='flex items-center gap-2'>
-                            <h1 className='text-sm font-semibold text-green-900'>{post.author?.username}</h1>
-                            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge>}
+                            <h1 className='text-sm font-semibold text-blue-900'>{announcement.author?.username}</h1>
+                            {user?._id === announcement.author._id && <Badge variant="secondary">Author</Badge>}
+                            {/* Add admin badge if needed */}
+                            {/* {announcement.author?.isAdmin && <Badge variant="default">Admin</Badge>} */}
                         </div>
                         <div className='text-xs text-gray-500'>
                             10 minutes ago
+                            {/* TODO: Use actual announcement date */}
+                            {/* {format(new Date(announcement.createdAt), 'MMM d, yyyy')} */}
                         </div>
                     </div>
                 </div>
@@ -129,34 +138,41 @@ const Post = ({ post }) => {
                         <MoreHorizontal className='cursor-pointer' />
                     </DialogTrigger>
                     <DialogContent className="flex flex-col items-center text-sm text-center">
-                        {post?.author?._id !== user?._id && 
-                            <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+                        {announcement?.author?._id !== user?._id && 
+                            <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Report</Button>
                         }
-                        <Button variant='ghost' className="cursor-pointer w-fit">Add to favorites</Button>
-                        {user && user?._id === post?.author._id && 
-                            <Button onClick={deletePostHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>
+                        <Button variant='ghost' className="cursor-pointer w-fit">Save Announcement</Button>
+                        {(user && user?._id === announcement?.author._id) && 
+                            <Button onClick={deleteAnnouncementHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>
                         }
                     </DialogContent>
                 </Dialog>
             </div>
 
-            {/* Caption (always rendered to maintain consistent spacing) */}
-            {post.caption && (
+            {/* Announcement Title - Added for announcements */}
+            {announcement.title && (
+                <h2 className='text-lg font-bold my-2 text-blue-800'>
+                    {announcement.title}
+                </h2>
+            )}
+
+            {/* Announcement Content */}
+            {announcement.content && (
                 <p className='text-sm my-2'>
-                    {post.caption}
+                    {announcement.content}
                 </p>
             )}
 
             {/* Image (if exists) */}
-            {post.image && (
+            {announcement.image && (
                 <img
                     className='w-full rounded-lg object-cover h-80 mt-2'
-                    src={post.image}
-                    alt="post_img"
+                    src={announcement.image}
+                    alt="announcement_img"
                 />
             )}
 
-            {/* Post Actions */}
+            {/* Announcement Actions */}
             <div className='flex items-center justify-between my-2'>
                 <div className='flex items-center gap-4 mt-4 text-gray-600 text-sm'>
                     {liked ? 
@@ -165,7 +181,7 @@ const Post = ({ post }) => {
                     }
                     <MessageSquareText 
                         onClick={() => {
-                            dispatch(setSelectedPost(post));
+                            dispatch(setSelectedAnnouncement(announcement));
                             setOpen(true);
                         }} 
                         className='cursor-pointer hover:text-gray-600' 
@@ -176,13 +192,13 @@ const Post = ({ post }) => {
             </div>
 
             {/* Likes count */}
-            <span className='font-medium block mb-2'>{postLike} likes</span>
+            <span className='font-medium block mb-2'>{announcementLike} likes</span>
 
             {/* Comments section */}
             {comment.length > 0 && (
                 <span 
                     onClick={() => {
-                        dispatch(setSelectedPost(post));
+                        dispatch(setSelectedAnnouncement(announcement));
                         setOpen(true);
                     }} 
                     className='cursor-pointer text-sm text-gray-400'
@@ -208,4 +224,4 @@ const Post = ({ post }) => {
     )
 }
 
-export default Post;
+export default Announcement;
