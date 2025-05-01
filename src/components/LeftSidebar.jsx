@@ -21,13 +21,19 @@ import EventPost from "./EventPost";
 import axios from "axios";
 import { setAuthUser } from "@/redux/authSlice";
 import { setSelectedPost, setPosts } from "@/redux/postSlice";
-
+import { useEffect } from "react";
+import RoleBadge from "./RoleBadge";
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const [eventOpen, setEventOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (user) {
+      console.log("User details from backend:", user);
+    }
+  }, [user]);
 
   const logoutHandler = async () => {
     try {
@@ -92,18 +98,20 @@ const LeftSidebar = () => {
         </div>
 
         <div className="ml-3">
-          <div className="font-semibold cursor-pointer hover:underline text-white">
+          <div className="flex font-semibold cursor-pointer hover:underline text-white " onClick={()=>sidebarHandler("Profile")}>
             {user?.fullName}
+            {user?.role && (
+            <div className="text-xs mt-1 text-white flex items-center justify-center ml-1">
+              <RoleBadge role={user.role} />
+            </div>
+          )}
           </div>
+
           <div className="text-sm font-semibold font-sans text-[#B9FBC0]">
             {user?.department}
           </div>
-          {/* Display role badge */}
-          {user?.role && (
-            <div className="text-xs mt-1 text-white">
-              Role: <span className="capitalize">{user.role}</span>
-            </div>
-          )}
+
+          
         </div>
       </div>
 

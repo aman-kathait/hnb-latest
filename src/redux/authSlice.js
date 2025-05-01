@@ -6,7 +6,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    SuggestedUsers: [],
+    suggestedUsers: [],
     userProfile: null,
    
   },

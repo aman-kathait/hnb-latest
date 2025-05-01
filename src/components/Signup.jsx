@@ -29,19 +29,64 @@ const Signup = () => {
 
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
+  const sendOtpHandler = async (e) => {
+    e.preventDefault();
+    
+    // if (!termsAccepted) {
+    //   toast.error("You must accept the terms and conditions.");
+    //   return;
+    // }
+
+    // Basic validation
+    if (!input.email || !input.password || !input.firstname || !input.lastname || !input.department || !input.year) {
+      toast.error("Please fill all the required fields.");
+      return;
+    }
+    // Dummy function to simulate OTP sending
+    {
+      setOtpLoading(true);
+    setOtpSent(true);
+    // toast.success("OTP sent to your email!");
+  }
+    // Uncomment the following code to enable actual OTP sending
+    try {
+      setOtpLoading(true);
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/user/send-otp",
+        { email: input.email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        setOtpSent(true);
+        toast.success("OTP sent to your email, check!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   const signupHandler = async (e) => {
     e.preventDefault();
-    console.log(input);
-    
 
-    if (!termsAccepted) {
-      toast.error("You must accept the terms and conditions.");
+    if (!otp) {
+      toast.error("Please enter the OTP");
       return;
     }
 
@@ -49,7 +94,7 @@ const Signup = () => {
       setLoading(true);
       const res = await axios.post(
         "http://localhost:8000/api/v1/user/register",
-        input,
+        { ...input, otp },
         {
           headers: {
             "Content-Type": "application/json",
@@ -70,6 +115,8 @@ const Signup = () => {
           tc: false,
         });
         setTermsAccepted(false);
+        setOtpSent(false);
+        setOtp("");
       }
     } catch (error) {
       console.log(error);
@@ -82,7 +129,7 @@ const Signup = () => {
   return (
     <div className="flex items-center justify-center w-full min-h-screen sm:bg-gray-50 px-4 sm:px-6">
       <form
-        onSubmit={signupHandler}
+        onSubmit={otpSent ? signupHandler : sendOtpHandler}
         className="w-full max-w-md bg-white sm:shadow-md rounded-xl p-6 flex flex-col gap-4 sm:border sm:border-gray-300"
       >
         <div className="text-center">
@@ -106,6 +153,7 @@ const Signup = () => {
               onChange={changeEventHandler}
               className="my-2 h-9"
               required
+              disabled={otpSent}
             />
           </div>
           <div className="w-full">
@@ -117,6 +165,7 @@ const Signup = () => {
               onChange={changeEventHandler}
               className="my-2 h-9"
               required
+              disabled={otpSent}
             />
           </div>
         </div>
@@ -129,6 +178,7 @@ const Signup = () => {
               }
               value={input.department}
               required
+              disabled={otpSent}
             >
               <SelectTrigger className="w-full text-black font-semibold sm:font-normal">
                 <SelectValue placeholder="Select your department" />
@@ -185,6 +235,7 @@ const Signup = () => {
               onValueChange={(value) => setInput({ ...input, year: value })}
               value={input.year}
               required
+              disabled={otpSent}
             >
               <SelectTrigger className="w-full font-semibold text-black">
                 <SelectValue placeholder="Passing Year" />
@@ -213,8 +264,10 @@ const Signup = () => {
             name="email"
             value={input.email}
             onChange={changeEventHandler}
+            placeholder="@hnbgu.edu.in"
             className="my-2 h-9"
             required
+            disabled={otpSent}
           />
         </div>
 
@@ -227,8 +280,26 @@ const Signup = () => {
             onChange={changeEventHandler}
             className="my-2 h-9"
             required
+            disabled={otpSent}
           />
         </div>
+
+        {otpSent && (
+          <div className="animate-in fade-in">
+            <span className="font-medium">Enter OTP</span>
+            <Input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className="my-2 h-9"
+              placeholder="Enter 4-digit OTP"
+              required
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              We've sent a 4-digit code to your email.
+            </p>
+          </div>
+        )}
 
         <div className="items-top flex space-x-2">
           <Checkbox
@@ -236,8 +307,9 @@ const Signup = () => {
             checked={termsAccepted}
             onCheckedChange={(checked) => {
               setTermsAccepted(checked);
-              setInput({ ...input, tc: checked }); 
+              setInput({ ...input, tc: checked });
             }}
+            disabled={otpSent}
           />
           <div className="grid gap-1.5 leading-none">
             <label htmlFor="terms" className="text-sm font-medium leading-none">
@@ -249,14 +321,25 @@ const Signup = () => {
           </div>
         </div>
 
-        {loading ? (
+        {otpSent ? (
+          loading ? (
+            <Button className="h-10 w-full" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button className="h-10 w-full" type="submit">
+              Sign Up
+            </Button>
+          )
+        ) : otpLoading ? (
           <Button className="h-10 w-full" disabled>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
+            Sending OTP...
           </Button>
         ) : (
           <Button className="h-10 w-full" type="submit">
-            Signup
+            Send OTP
           </Button>
         )}
 
@@ -271,4 +354,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Signup; 

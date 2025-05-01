@@ -10,7 +10,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
 import { Badge } from './ui/badge'
-
+import RoleBadge from "./RoleBadge";
 const Post = ({ post }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
@@ -117,7 +117,8 @@ const Post = ({ post }) => {
                     <div className='flex flex-col'>
                         <div className='flex items-center gap-2'>
                             <h1 className='text-sm font-semibold text-green-900'>{post.author?.username}</h1>
-                            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge>}
+                            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge> }
+                            {<RoleBadge role={post.author?.role} className="text-xs"/>}
                         </div>
                         <div className='text-xs text-gray-500'>
                             10 minutes ago
