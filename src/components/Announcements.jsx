@@ -3,12 +3,13 @@ import Announcement from "./Announcement";
 import { useSelector } from "react-redux";
 import { Skeleton } from "@/components/ui/skeleton";
 const Announcements = () => {
-  const { announcements } = useSelector((store) => store.announcement);
+  //uncomment following code to get announcements from redux store
+  // const { announcements } = useSelector((store) => store.announcement);
   return (
     <div>
-      {announcements?.length > 0 ? (
+      {/* {announcements?.length > 0 ? (
         announcements.map((announcement) => <Announcement key={announcement._id} announcement={announcement} />)
-      ) : (
+      ) : ( */}
         <div className="flex justify-center items-center h-[50vh] text-2xl font-semibold">
           No Announcements Yet
           <div className="flex flex-col space-y-3">
@@ -19,7 +20,7 @@ const Announcements = () => {
             </div>
           </div>
         </div>
-      )}
+      {/* )} */}
     </div>
   );
 };

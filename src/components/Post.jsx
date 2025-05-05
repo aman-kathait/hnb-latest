@@ -11,6 +11,8 @@ import { toast } from 'sonner'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
 import { Badge } from './ui/badge'
 import RoleBadge from "./RoleBadge";
+import { formatDistanceToNow, parseISO, format } from 'date-fns';
+import { Link } from 'react-router-dom'
 const Post = ({ post }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
@@ -20,6 +22,14 @@ const Post = ({ post }) => {
     const [postLike, setPostLike] = useState(post.likes.length);
     const [comment, setComment] = useState(post.comments);
     const dispatch = useDispatch();
+
+    if (!post || !post.author) {
+        return (
+            <div className="my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24 text-center text-gray-500">      
+                Post data is incomplete
+            </div>
+        );
+    }
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -95,6 +105,7 @@ const Post = ({ post }) => {
     const bookmarkHandler = async () => {
         try {
             const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
+            console.log(res.data);
             if(res.data.success){
                 toast.success(res.data.message);
             }
@@ -102,6 +113,23 @@ const Post = ({ post }) => {
             console.log(error);
         }
     }
+
+    // Format timestamp
+    const formatTimeAgo = (dateString) => {
+        if (!dateString) return "recently";
+        
+        const date = parseISO(dateString);
+        const timeAgo = formatDistanceToNow(date, { addSuffix: true });
+        
+        // For posts older than a week, show the actual date
+        const isOlderThanAWeek = Date.now() - date.getTime() > 7 * 24 * 60 * 60 * 1000;
+        
+        if (isOlderThanAWeek) {
+            return format(date, 'MMM d, yyyy');
+        }
+        
+        return timeAgo;
+    };
 
     return (
         <div className='my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24'>
@@ -116,12 +144,14 @@ const Post = ({ post }) => {
                     </div>
                     <div className='flex flex-col'>
                         <div className='flex items-center gap-2'>
-                            <h1 className='text-sm font-semibold text-green-900'>{post.author?.username}</h1>
-                            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge> }
+                            <h1 className='text-sm font-semibold text-green-900'>
+                                <Link to={`/profile/${post.author?._id}`}>{post.author?.fullName}</Link>
+                            </h1>       
+                            {user?._id === post.author?._id && <Badge variant="secondary">You</Badge> }           
                             {<RoleBadge role={post.author?.role} className="text-xs"/>}
                         </div>
                         <div className='text-xs text-gray-500'>
-                            10 minutes ago
+                            {formatTimeAgo(post.createdAt)}
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import HnbLogo from "../assets/hnblogo.png";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -40,29 +41,27 @@ const Signup = () => {
 
   const sendOtpHandler = async (e) => {
     e.preventDefault();
-    
-    // if (!termsAccepted) {
-    //   toast.error("You must accept the terms and conditions.");
-    //   return;
-    // }
 
+    // Check if terms and conditions are accepted
+    if (!termsAccepted) {
+      toast.error("Please accept the terms and conditions");
+      return;
+    }
+    
     // Basic validation
     if (!input.email || !input.password || !input.firstname || !input.lastname || !input.department || !input.year) {
       toast.error("Please fill all the required fields.");
       return;
     }
-    // Dummy function to simulate OTP sending
-    {
-      setOtpLoading(true);
-    setOtpSent(true);
-    // toast.success("OTP sent to your email!");
-  }
-    // Uncomment the following code to enable actual OTP sending
+
     try {
       setOtpLoading(true);
       const res = await axios.post(
         "http://localhost:8000/api/v1/user/send-otp",
-        { email: input.email },
+        { email: input.email,
+          acceptedTerms: termsAccepted 
+
+         },
         {
           headers: {
             "Content-Type": "application/json",
@@ -70,9 +69,14 @@ const Signup = () => {
           withCredentials: true,
         }
       );
+      
+      // Only set OTP sent to true if the request was successful
       if (res.data.success) {
         setOtpSent(true);
         toast.success("OTP sent to your email, check!");
+      } else {
+        // Handle case where API returns success: false but no error
+        toast.error(res.data.message || "Failed to send OTP");
       }
     } catch (error) {
       console.log(error);
@@ -94,7 +98,9 @@ const Signup = () => {
       setLoading(true);
       const res = await axios.post(
         "http://localhost:8000/api/v1/user/register",
-        { ...input, otp },
+        { ...input, otp,
+          acceptedTerms: termsAccepted   // check 
+         },
         {
           headers: {
             "Content-Type": "application/json",
@@ -134,7 +140,7 @@ const Signup = () => {
       >
         <div className="text-center">
           <img
-            src="hnblogo.png"
+            src={HnbLogo}
             className="mx-auto h-16 w-16 mb-2"
             alt="Logo"
           />
@@ -152,7 +158,7 @@ const Signup = () => {
               value={input.firstname}
               onChange={changeEventHandler}
               className="my-2 h-9"
-              required
+            
               disabled={otpSent}
             />
           </div>
@@ -164,7 +170,7 @@ const Signup = () => {
               value={input.lastname}
               onChange={changeEventHandler}
               className="my-2 h-9"
-              required
+              
               disabled={otpSent}
             />
           </div>
@@ -177,7 +183,7 @@ const Signup = () => {
                 setInput({ ...input, department: value })
               }
               value={input.department}
-              required
+              
               disabled={otpSent}
             >
               <SelectTrigger className="w-full text-black font-semibold sm:font-normal">
@@ -234,7 +240,7 @@ const Signup = () => {
             <Select
               onValueChange={(value) => setInput({ ...input, year: value })}
               value={input.year}
-              required
+              
               disabled={otpSent}
             >
               <SelectTrigger className="w-full font-semibold text-black">
@@ -243,7 +249,7 @@ const Signup = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Year</SelectLabel>
-                  {Array.from({ length: 2026 - 2000 }, (_, i) => {
+                  {Array.from({ length: 2036 - 2000 }, (_, i) => {
                     const year = 2000 + i;
                     return (
                       <SelectItem key={year} value={year.toString()}>
@@ -266,7 +272,7 @@ const Signup = () => {
             onChange={changeEventHandler}
             placeholder="@hnbgu.edu.in"
             className="my-2 h-9"
-            required
+            
             disabled={otpSent}
           />
         </div>
@@ -279,7 +285,7 @@ const Signup = () => {
             value={input.password}
             onChange={changeEventHandler}
             className="my-2 h-9"
-            required
+            
             disabled={otpSent}
           />
         </div>
@@ -293,7 +299,8 @@ const Signup = () => {
               onChange={(e) => setOtp(e.target.value)}
               className="my-2 h-9"
               placeholder="Enter 4-digit OTP"
-              required
+              maxLength={4}
+              
             />
             <p className="text-sm text-muted-foreground mt-1">
               We've sent a 4-digit code to your email.
@@ -311,14 +318,30 @@ const Signup = () => {
             }}
             disabled={otpSent}
           />
+
+
+
+          {/* Add Term and Condition Page */}
+
+
           <div className="grid gap-1.5 leading-none">
             <label htmlFor="terms" className="text-sm font-medium leading-none">
               Accept terms and conditions
             </label>
             <p className="text-sm text-muted-foreground">
-              You agree to our Terms of Service and Privacy Policy.
+              You agree to our {" "}
+              <Link to="/terms" className="text-blue-600 hover:underline" target="_blank">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="text-blue-600 hover:underline" target="_blank">
+                Privacy Policy
+              </Link>.
             </p>
           </div>
+
+
+
         </div>
 
         {otpSent ? (
@@ -354,4 +377,4 @@ const Signup = () => {
   );
 };
 
-export default Signup; 
+export default Signup;

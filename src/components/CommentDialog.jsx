@@ -127,7 +127,7 @@ const CommentDialog = ({open, setOpen}) => {
                 </Avatar>
               </Link>
               <div>
-                <Link className="font-semibold text-xs sm:text-sm">{selectedPost?.author?.username}</Link>
+                <Link className="font-semibold text-xs sm:text-sm">{selectedPost?.author?.fullName}</Link>
               </div>
             </div>
             <Dialog>

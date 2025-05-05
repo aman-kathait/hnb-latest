@@ -17,7 +17,7 @@ const Comment = ({ comment, userId, onDelete }) => {
           </Avatar>
           <div>
             <p className="font-semibold text-sm">
-              {author.username || 'Unknown User'}
+              {author.fullName || 'Unknown User'}
             </p>
             <p className="text-sm">{comment.text}</p>
           </div>

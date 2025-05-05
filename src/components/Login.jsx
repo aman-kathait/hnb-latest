@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
+import HnbLogo from "../assets/hnblogo.png";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -56,7 +57,7 @@ const Login = () => {
         className="w-full max-w-sm md:shadow-lg md:border border-border flex flex-col gap-4 px-6 md:py-8 rounded-xl bg-card"
       >
         <div className="flex flex-col items-center text-center mb-4">
-          <img src="hnblogo.png" className="h-20 w-20 mb-2" alt="Logo" />
+          <img src={HnbLogo} className="h-20 w-20 mb-2" alt="Logo" />
           <h1 className="text-2xl font-bold">Welcome back</h1>
           <p className="text-sm text-muted-foreground">
             Login to your Hnb Connect account

@@ -13,3 +13,4 @@ export const readFileAsDataURL = (file) => {
     reader.readAsDataURL(file);
   })
 }
+
