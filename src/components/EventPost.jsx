@@ -6,12 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Textarea } from './ui/textarea'
 import { Button } from './ui/button'
 import { readFileAsDataURL } from '@/lib/utils'
-import { Loader2, X } from 'lucide-react' // Removed CalendarIcon import
+import { Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPosts } from '@/redux/postSlice'
-// Removed date-fns and calendar-related imports
+import { format, addDays, isBefore, isAfter, parseISO } from 'date-fns'
 
 const EventPost = ({ open, setOpen }) => {
   const imageRef = useRef()
@@ -19,6 +19,8 @@ const EventPost = ({ open, setOpen }) => {
   const [caption, setCaption] = useState("")
   const [imagePreview, setImagePreview] = useState("")
   const [loading, setLoading] = useState(false)
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const { user } = useSelector(store => store.auth)
   const { posts } = useSelector(store => store.post)
   const dispatch = useDispatch()
@@ -27,6 +29,8 @@ const EventPost = ({ open, setOpen }) => {
     setCaption("")
     setFile("")
     setImagePreview("")
+    setStartDate("")
+    setEndDate("")
     if (imageRef.current) {
       imageRef.current.value = ""
     }
@@ -53,18 +57,75 @@ const EventPost = ({ open, setOpen }) => {
     }
   }
 
+  const handleStartDateChange = (e) => {
+    const selectedDate = e.target.value
+    const today = format(new Date(), 'yyyy-MM-dd')
+
+    if (selectedDate === "") {
+      setStartDate("")
+      setEndDate("") // Clear end date when start date is cleared
+      return
+    }
+    
+    if (selectedDate < today) {
+      toast.error("Start date cannot be in the past")
+      return
+    }
+    
+    setStartDate(selectedDate)
+    
+    // Reset end date if it's before the new start date
+    if (endDate && endDate < selectedDate) {
+      setEndDate("")
+    }
+  }
+
+  const handleEndDateChange = (e) => {
+    const selectedDate = e.target.value
+
+    if (selectedDate === "") {
+      setEndDate("") // Simple clear for end date
+      return
+    }
+    
+    if (!startDate) {
+      toast.error("Please select start date first")
+      return
+    }
+    
+    if (selectedDate < startDate) {
+      toast.error("End date cannot be before start date")
+      return
+    }
+    
+    setEndDate(selectedDate)
+  }
+  
+
   const createPostHandler = async () => {
+    // Validate that at least description or image is provided
     if (!caption.trim() && !imagePreview) {
       toast.error("Please add at least a caption or image")
       return
     }
 
+    // Validate dates if provided
+    if (startDate && endDate) {
+      if (isBefore(parseISO(endDate), parseISO(startDate))) {
+        toast.error("End date cannot be before start date")
+        return
+      }
+    }
+
     const formData = new FormData()
     if (caption.trim()) formData.append("caption", caption)
     if (file) formData.append("image", file)
+    if (startDate) formData.append("startDate", startDate)
+    if (endDate) formData.append("endDate", endDate)
     
-    // TODO: Change API endpoint to your event-specific endpoint
-    // Example: '/api/v1/event/addevent' instead of '/api/v1/post/addpost'
+    // Mark this as an event post
+    formData.append("isEvent", "true")
+    
     try {
       setLoading(true)
       const res = await axios.post('http://localhost:8000/api/v1/post/addpost', formData, {
@@ -75,8 +136,6 @@ const EventPost = ({ open, setOpen }) => {
       })
       
       if (res.data.success) {
-        // TODO: You might want to create a separate action for events
-        // like setEvents instead of setPosts if storing in different table
         dispatch(setPosts([res.data.post, ...posts]))
         toast.success(res.data.message)
         setOpen(false)
@@ -88,6 +147,10 @@ const EventPost = ({ open, setOpen }) => {
       setLoading(false)
     }
   }
+
+  // Calculate min dates for date inputs
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const minEndDate = startDate || today
 
   return (
     <Dialog open={open} onOpenChange={(val) => {
@@ -118,8 +181,39 @@ const EventPost = ({ open, setOpen }) => {
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
           className="focus-visible:ring-transparent border text-lg"
-          placeholder="What's on your mind?"
+          placeholder="Describe your event..."
         />
+
+        {/* Date Selection Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+              Start Date (optional)
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              value={startDate}
+              onChange={handleStartDateChange}
+              min={today}
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
+          <div>
+            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+              End Date (optional)
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              value={endDate}
+              onChange={handleEndDateChange}
+              min={minEndDate}
+              disabled={!startDate}
+              className="w-full p-2 border rounded-md disabled:opacity-50"
+            />
+          </div>
+        </div>
 
         {imagePreview && (
           <div className='w-full h-64 flex items-center justify-center relative'>

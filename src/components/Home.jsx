@@ -10,7 +10,6 @@ const Home = () => {
   return (
     <div className='flex'>
             <div className='flex-grow'>
-                <Feed />
                 <Outlet />
             </div>
             <RightSidebar/>
@@ -18,4 +17,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Home;

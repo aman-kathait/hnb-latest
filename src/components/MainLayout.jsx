@@ -7,13 +7,15 @@ const MainLayout = () => {
   return (
     <div className='bg-[#F5F9F5]'>
       <Navbar/>
+      <div className="flex">
       <LeftSidebar/>
-      <Footer/>
-      <div>
-        <Outlet/>
+        <div className="flex-1">
+          <Outlet/>
+        </div>
       </div>
+      <Footer/>
     </div>
   )
 }
 
-export default MainLayout
+export default MainLayout;

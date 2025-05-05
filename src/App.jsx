@@ -6,7 +6,8 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import Profile from './components/Profile'
 import EditProfile from './components/EditProfile'
 import { useDispatch, useSelector } from 'react-redux'
-import Announcement from './components/Announcement'
+import Posts from './components/Posts'
+import Announcements from './components/Announcements'
 import Error from './components/Error'
 import ChatPage from './components/ChatPage'
 import {io} from "socket.io-client";
@@ -33,7 +34,17 @@ const browserRouter = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
+        children: [
+          {
+            index: true,
+            element: <Posts />
+          },
+          {
+            path: "announcements",
+            element: <Announcements />
+          }
+        ]
       },
       {
         path: "/profile/:id",
@@ -42,10 +53,6 @@ const browserRouter = createBrowserRouter([
       {
         path: "/account/edit",
         element: <EditProfile />
-      },
-      {
-        path: "/announcements",
-        element: <Announcement />
       },
       {
         path: "/chat",

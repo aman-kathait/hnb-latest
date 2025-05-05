@@ -66,7 +66,7 @@ const LeftSidebar = () => {
       case "Home":
         navigate("/");
         break;
-      case "Announcement":
+      case "Announcements":
         navigate("/announcements");
         break;
       case "Messages":
@@ -82,10 +82,11 @@ const LeftSidebar = () => {
 
   const baseSidebarItems = [
     { icon: <Home />, text: "Home" },
-    { icon: <Megaphone />, text: "Announcement" },
+    { icon: <Megaphone />, text: "Announcements" },
     { icon: <MessageSquareMore />, text: "Messages" },
     { icon: <Heart />, text: "Notifications" },
     { icon: <PlusSquare />, text: "Create Post" },
+    ...(user?.role === 'faculty' ? [{ icon: <PlusSquare />, text: "Event Post" }] : []),
     { icon: <LogOut />, text: "Log Out" },
   ];
 
@@ -184,9 +185,11 @@ const LeftSidebar = () => {
       </div>
 
       <CreatePost open={open} setOpen={setOpen} />
-      {user?.role === "faculty" && (
+      {/* uncomment next line to open create event section for every role */}
+      <EventPost open={eventOpen} setOpen={setEventOpen} />
+      {/* {user?.role === "faculty" && (
         <EventPost open={eventOpen} setOpen={setEventOpen} />
-      )}
+      )} */}
     </div>
   );
 };
