@@ -86,10 +86,6 @@ function App() {
         },
         transports: ["websocket"],
       });
-      // dispatch(setSocket(socketio));
-      // socketio.on('getOnlineUsers',(onlineUsers)=>{
-      //   dispatch(setOnlineUsers(onlineUsers));
-      // });
       socketio.on('notification', (notification) => {
         dispatch(setLikeNotification(notification));
       });

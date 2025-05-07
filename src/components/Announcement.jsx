@@ -203,7 +203,7 @@ const Announcement = ({ announcement }) => {
                     }} 
                     className='cursor-pointer text-sm text-gray-400'
                 >
-                    View all {comment.length} comments
+                    View all comments
                 </span>
             )}
 

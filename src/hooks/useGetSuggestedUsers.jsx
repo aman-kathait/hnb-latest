@@ -12,6 +12,7 @@ const useGetSuggestedUsers = (refreshFlag) => {
             if (res.data.success) { 
                 dispatch(setSuggestedUsers(res.data.users));
             }
+            // console.log("API Response from useGetSuggestedUsers:", res.data);
         } catch (error) {
             console.log(error);
         }

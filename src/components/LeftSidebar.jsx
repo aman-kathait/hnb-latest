@@ -31,7 +31,7 @@ const LeftSidebar = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("User details from backend in left side bar:", user);
+      //console.log("User details from backend in left side bar:", user);
     }
   }, [user]);
 
@@ -175,7 +175,7 @@ const LeftSidebar = () => {
             <div
               key={index}
               onClick={() => sidebarHandler(item.text)}
-              className="flex items-center gap-3 hover:bg-[#CFE6D8] hover:text-[#134327] cursor-pointer rounded-lg p-3 my-3 mt-4 font-semibold text-[#083015]"
+              className="flex items-center gap-3 hover:bg-[#CFE6D8] hover:text-[#134327] cursor-pointer rounded-lg p-3  mt-4 font-semibold text-[#083015]"
             >
               {item.icon}
               <span>{item.text}</span>

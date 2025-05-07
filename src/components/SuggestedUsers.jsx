@@ -9,9 +9,14 @@ import useGetSuggestedUsers from '@/hooks/useGetSuggestedUsers'
 
 const SuggestedUsers = () => {
   const dispatch = useDispatch()
-  const { suggestedUsers = [], user = {} } = useSelector(store => store.auth || {})
+  const { suggestedUsers = [], user = {},userProfiles=[] } = useSelector(store => store.auth || {})
+  
   const { followOrUnfollow } = useFollowUser()
   const [loadingStates, setLoadingStates] = useState({})
+
+  useEffect(() => {
+    console.log("Fetched user profiles from Redux new hook:", userProfiles);
+  }, [userProfiles]);
   
   // Check if current user is following a suggested user
   const isFollowing = (userId) => {

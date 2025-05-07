@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
-import { Bookmark, MessageCircle, MoreHorizontal, Send, MessageSquareText } from 'lucide-react'
+import { MessageCircle, MoreHorizontal, Send, MessageSquareText } from 'lucide-react'
+import { Bookmark, BookmarkCheck, } from 'lucide-react'; 
+
 import { Button } from './ui/button'
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from './CommentDialog'
@@ -19,10 +21,12 @@ const Post = ({ post }) => {
     const { user } = useSelector(store => store.auth);
     const { posts } = useSelector(store => store.post);
     const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+    const [bookmarked, setBookmarked] = useState(Array.isArray(post.bookmarks) && post.bookmarks.includes(user?._id));
+
     const [postLike, setPostLike] = useState(post.likes.length);
     const [comment, setComment] = useState(post.comments);
     const dispatch = useDispatch();
-
+    
     if (!post || !post.author) {
         return (
             <div className="my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24 text-center text-gray-500">      
@@ -173,7 +177,7 @@ const Post = ({ post }) => {
 
             {/* Caption (always rendered to maintain consistent spacing) */}
             {post.caption && (
-                <p className='text-sm my-2'>
+                <p className='text-sm pt-4 '>
                     {post.caption}
                 </p>
             )}
@@ -201,9 +205,13 @@ const Post = ({ post }) => {
                         }} 
                         className='cursor-pointer hover:text-gray-600' 
                     />
-                    <Send className='cursor-pointer hover:text-gray-600' />
                 </div>
-                <Bookmark onClick={bookmarkHandler} className='cursor-pointer hover:text-gray-600' />
+                {
+                    bookmarked ?
+                    <BookmarkCheck onClick={bookmarkHandler} className='cursor-pointer text-gray-600' /> : 
+                    <Bookmark onClick={bookmarkHandler} className='cursor-pointer hover:text-gray-600' fill="none" />
+                }
+                {/* <Bookmark onClick={bookmarkHandler} className='cursor-pointer hover:text-gray-600' /> */}
             </div>
 
             {/* Likes count */}
@@ -218,11 +226,12 @@ const Post = ({ post }) => {
                     }} 
                     className='cursor-pointer text-sm text-gray-400'
                 >
-                    View all {comment.length} comments
+                    View all comments
                 </span>
             )}
 
-            <CommentDialog open={open} setOpen={setOpen} />
+            <CommentDialog open={open} setOpen={setOpen} post={post} />
+
 
             {/* Add comment */}
             <div className='flex items-center justify-between'>

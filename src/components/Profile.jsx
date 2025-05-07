@@ -58,7 +58,7 @@ const Profile = () => {
   console.log("Is following:", isFollowing);
 
   return (
-    <div className="flex justify-center w-full px-4 py-8 mt-14 ml-40">
+    <div className="flex justify-center w-full px-4 py-8 mt-14 ml-40 bg-[#F4FFF6] h-screen">
       <div className="w-full max-w-6xl">
         {/* Top Profile Section */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center mb-12">
@@ -74,7 +74,8 @@ const Profile = () => {
           <div className="md:col-span-4">
             <div className="flex flex-col gap-4">
               {/* Username and Buttons */}
-              <div className="flex items-center flex-wrap gap-4">
+              <div>
+              <div className="flex items-center flex-wrap gap-4 ">
                 <span className="text-2xl font-semibold text-gray-900">
                   {userProfile?.fullName}
                   <span className="">
@@ -115,6 +116,14 @@ const Profile = () => {
                   </Button>
                 )}
               </div>
+              <div>
+                  <span className="text-sm text-gray-500 font-medium flex items-center gap-2">
+                    {userProfile?.department} ,{" "}
+                    {userProfile?.graduationYear || "Not available"}
+                  </span>
+              </div>
+              </div>
+              
 
               {/* Stats */}
               <div className="flex items-center gap-6 text-sm text-gray-700">
@@ -139,15 +148,7 @@ const Profile = () => {
                     {userProfile?.rollnumber || "RollNo. Not available"}
                   </span>
                 </Badge>
-                <Badge
-                  variant="secondary "
-                  className="w-fit text-sm ml-2"
-                >
-                  <span className="pl-1 ">
-                    {userProfile?.department} ,Graduation Year{" "}
-                    {userProfile?.graduationYear || "Not available"}
-                  </span>
-                </Badge>
+               
                 {(userProfile?.bio || "bio here...")
                   .match(/.{1,25}/g)
                   ?.slice(0, 3)
