@@ -102,7 +102,7 @@ const ChatPage = () => {
                   value={textMessage}
                   onChange={(e) => setTextMessage(e.target.value)}
                   type="text"
-                  className='flex-1 '
+                  className='flex-1 mb-16 md:mb-0'
                   placeholder="Type a message..."
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && textMessage.trim()) {
@@ -113,6 +113,7 @@ const ChatPage = () => {
                 <Button
                   onClick={() => sendMessageHandler(selectedUser?._id)}
                   disabled={!textMessage.trim()}
+                  className="bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed mb-16 md:mb-0" 
                 >
                   Send
                 </Button>
