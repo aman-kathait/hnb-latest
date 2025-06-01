@@ -1,4 +1,10 @@
-const API_URL = import.meta.env.VITE_API_URL || "https://hnbconnectbackend.vercel.app";
+const isDevelopment = import.meta.env.MODE === 'development';
 
-// Remove any trailing slash
-export default API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+// Use the deployed URL in production, localhost in development
+const API_URL = isDevelopment 
+  ? "http://localhost:8000" 
+  : "https://hnbconnectbackend.vercel.app";
+
+// Export both the API URL and a flag for socket.io
+export default API_URL;
+export const SOCKET_URL = API_URL; // Add this export for socket.io
