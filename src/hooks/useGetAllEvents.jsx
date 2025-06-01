@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { setEvents, setLoading, setError } from '@/redux/eventSlice';
+import API_URL from '@/config/api';
 
 const useGetAllEvents = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ const useGetAllEvents = () => {
         dispatch(setLoading(true));
         
         // Use the correct endpoint from your backend
-        const response = await axios.get('http://localhost:8000/api/v1/event/all', {
+        const response = await axios.get(`${API_URL}/api/v1/event/all`, {
           withCredentials: true
         });
 

@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
 import HnbLogo from "../assets/hnblogo.png";
+import API_URL from "@/config/api";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -27,7 +28,7 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/login",
+        `${API_URL}/api/v1/user/login`,
         input,
         {
           headers: {

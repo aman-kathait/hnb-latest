@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import HnbLogo from "../assets/hnblogo.png";
+import API_URL from "@/config/api";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -79,7 +80,7 @@ const Signup = () => {
     try {
       setOtpLoading(true);
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/send-otp",
+        `${API_URL}/api/v1/user/send-otp`,
         { 
           firstname: input.firstname,
           lastname: input.lastname,
@@ -122,7 +123,7 @@ const Signup = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/register",
+        `${API_URL}/api/v1/user/register`,
         { 
           email: input.email, 
           otp: otp
@@ -161,7 +162,7 @@ const Signup = () => {
     try {
       setOtpLoading(true);
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/send-otp",
+        `${API_URL}/api/v1/user/send-otp`,
         { 
           firstname: input.firstname,
           lastname: input.lastname,

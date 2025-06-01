@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import API_URL from "@/config/api";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8000/api/v1/user/forgot-password",
+        `${API_URL}/api/v1/user/forgot-password`,
         { email },
         { withCredentials: true }
       );

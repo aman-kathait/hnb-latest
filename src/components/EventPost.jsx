@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setPosts } from '@/redux/postSlice'
 import { format, addDays, isBefore, isAfter, parseISO } from 'date-fns'
 import { addEvent } from '@/redux/eventSlice'
+import API_URL from '@/config/api'
 
 const EventPost = ({ open, setOpen }) => {
   const imageRef = useRef()
@@ -129,7 +130,7 @@ const EventPost = ({ open, setOpen }) => {
     
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:8000/api/v1/event/add', formData, {
+      const res = await axios.post(`${API_URL}/api/v1/event/add`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },

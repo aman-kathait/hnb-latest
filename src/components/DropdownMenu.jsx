@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import SearchBar from "./SearchBar";
+import API_URL from "@/config/api";
 
 const DropdownMenu = ({ onClose }) => {
   const { user } = useSelector((state) => state.auth);
@@ -22,7 +23,7 @@ const DropdownMenu = ({ onClose }) => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+      const res = await axios.get(`${API_URL}/api/v1/user/logout`, {
         withCredentials: true,
       });
       if (res.data.success) {

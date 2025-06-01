@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { likeEvent, unlikeEvent, updateEventInterest } from "@/redux/eventSlice";
 import { toast } from "sonner";
+import API_URL from "@/config/api";
 
 const EventCard = ({ event }) => {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const EventCard = ({ event }) => {
   const handleLike = async () => {
     try {
       const endpoint = isLiked ? 'dislike' : 'like';
-      const response = await axios.get(`http://localhost:8000/api/v1/event/${event._id}/${endpoint}`, {
+      const response = await axios.get(`${API_URL}/api/v1/event/${event._id}/${endpoint}`, {
         withCredentials: true
       });
       
@@ -61,7 +62,7 @@ const EventCard = ({ event }) => {
     try {
       setLoading(true);
       const res = await axios.post(
-        `http://localhost:8000/api/v1/event/${event._id}/interest`,
+        `${API_URL}/api/v1/event/${event._id}/interest`,
         {},
         { withCredentials: true }
       );
@@ -87,7 +88,7 @@ const EventCard = ({ event }) => {
     try {
       setReportLoading(true);
       const res = await axios.get(
-        `http://localhost:8000/api/v1/event/${event._id}/interest-report`,
+        `${API_URL}/api/v1/event/${event._id}/interest-report`,
         { withCredentials: true }
       );
 
@@ -168,10 +169,10 @@ const EventCard = ({ event }) => {
               <span>{event.likes?.length || 0}</span>
             </Button>
             
-            <Button variant="ghost" size="sm" className="flex items-center space-x-1 px-2">
+            {/* <Button variant="ghost" size="sm" className="flex items-center space-x-1 px-2">
               <MessageCircle className="h-4 w-4" />
               <span>{event.comments?.length || 0}</span>
-            </Button>
+            </Button> */}
           </div>
           
           {user?.role === "faculty" && event.author?._id === user?._id && (

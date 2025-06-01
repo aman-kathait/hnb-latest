@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserProfile, updateCurrentUser, setSuggestedUsers } from '@/redux/authSlice';
+import API_URL from '@/config/api';
 
 const useFollowUser = () => {
   const [loading, setLoading] = useState(false);
@@ -14,22 +15,22 @@ const useFollowUser = () => {
     setError(null);
     
     try {
-      const res = await axios.post(`http://localhost:8000/api/v1/user/followorunfollow/${userId}`, {}, {
+      const res = await axios.post(`${API_URL}/api/v1/user/followorunfollow/${userId}`, {}, {
         withCredentials: true
       });
       
       // Refresh user profile data
-      const profileRes = await axios.get(`http://localhost:8000/api/v1/user/${userId}/profile`, {
+      const profileRes = await axios.get(`${API_URL}/api/v1/user/${userId}/profile`, {
         withCredentials: true
       });
       
       // Also get updated current user data to update following list
-      const currentUserRes = await axios.get(`http://localhost:8000/api/v1/user/${user._id}/profile`, {
+      const currentUserRes = await axios.get(`${API_URL}/api/v1/user/${user._id}/profile`, {
         withCredentials: true
       });
       
       // Get refreshed suggested users
-      const suggestedUsersRes = await axios.get('http://localhost:8000/api/v1/user/suggested', {
+      const suggestedUsersRes = await axios.get(`${API_URL}/api/v1/user/suggested`, {
         withCredentials: true
       });
       

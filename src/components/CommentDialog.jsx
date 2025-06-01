@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { setPosts } from '@/redux/postSlice';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import API_URL from '@/config/api';
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState('');
@@ -35,7 +36,7 @@ const CommentDialog = ({ open, setOpen }) => {
     try {
       setLoading(true);
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/${selectedPost?._id}/comment`,
+        `${API_URL}/api/v1/post/${selectedPost?._id}/comment`,
         { text },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -70,7 +71,7 @@ const CommentDialog = ({ open, setOpen }) => {
   const handleDeleteComment = async (commentId) => {
     try {
       const res = await axios.delete(
-        `http://localhost:8000/api/v1/post/${selectedPost?._id}/comment/${commentId}`,
+        `${API_URL}/api/v1/post/${selectedPost?._id}/comment/${commentId}`,
         { withCredentials: true }
       );
 

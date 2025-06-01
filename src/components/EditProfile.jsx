@@ -9,6 +9,7 @@ import { Loader2, Upload, FileText, Download, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { setAuthUser } from '@/redux/authSlice';
+import API_URL from '@/config/api';
 
 const EditProfile = () => {
     const imageRef = useRef();
@@ -59,7 +60,7 @@ const EditProfile = () => {
             formData.append("resume", resumeFile);
             
             const response = await axios.post(
-                "http://localhost:8000/api/v1/user/resume/upload",
+                `${API_URL}/api/v1/user/resume/upload`,
                 formData,
                 { 
                     withCredentials: true,
@@ -92,7 +93,7 @@ const EditProfile = () => {
         try {
             setResumeLoading(true);
             const response = await axios.delete(
-                "http://localhost:8000/api/v1/user/resume/delete",
+                `${API_URL}/api/v1/user/resume/delete`,
                 { withCredentials: true }
             );
             
@@ -132,7 +133,7 @@ const EditProfile = () => {
         
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:8000/api/v1/user/profile/edit', formData, {
+            const res = await axios.post(`${API_URL}/api/v1/user/profile/edit`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },

@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import API_URL from "@/config/api";
 
 const VerifyResetCode = () => {
   const location = useLocation();
@@ -31,7 +32,7 @@ const VerifyResetCode = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8000/api/v1/user/verify-reset-otp",
+        `${API_URL}/api/v1/user/verify-reset-otp`,
         { email, otp },
         { withCredentials: true }
       );

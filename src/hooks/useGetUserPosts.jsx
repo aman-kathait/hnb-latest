@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "@/config/api";
 
 const useGetUserPosts = (userId) => {
   const [posts, setPosts] = useState([]);
@@ -12,7 +13,7 @@ const useGetUserPosts = (userId) => {
     const fetchUserPosts = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:8000/api/v1/post/user/${userId}`, {
+        const res = await axios.get(`${API_URL}/api/v1/post/user/${userId}`, {
           withCredentials: true
         });
 

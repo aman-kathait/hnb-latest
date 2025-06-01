@@ -8,6 +8,7 @@ import { MessageCircleCode } from "lucide-react";
 import Messages from "./Messages";
 import axios from "axios";
 import { setMessages } from "@/redux/chatSlice";
+import API_URL from "@/config/api";
 
 const ChatPage = () => {
   const [textMessage, setTextMessage] = useState("");
@@ -20,7 +21,7 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/message/send/${receiverId}`,
+        `${API_URL}/api/v1/message/send/${receiverId}`,
         { textMessage },
         {
           headers: {

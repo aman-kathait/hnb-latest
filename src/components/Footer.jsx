@@ -9,6 +9,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { setAuthUser } from '@/redux/authSlice';
 import { setSelectedPost, setPosts } from '@/redux/postSlice';
+import API_URL from '@/config/api';
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const Footer = () => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+      const res = await axios.get(`${API_URL}/api/v1/user/logout`, {
         withCredentials: true,
       });
       if (res.data.success) {

@@ -20,6 +20,7 @@ import { setSelectedPost, setPosts } from "@/redux/postSlice";
 import RoleBadge from "./RoleBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
+import API_URL from "@/config/api";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const LeftSidebar = () => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+      const res = await axios.get(`${API_URL}/api/v1/user/logout`, {
         withCredentials: true,
       });
       if (res.data.success) {
