@@ -184,8 +184,8 @@ const EventPost = ({ open, setOpen }) => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className='text-base font-medium text-gray-900'>{user?.username}</h1>
-            <span className='text-gray-600 text-sm'>Department.</span>
+            <h1 className='text-base font-medium text-gray-900'>{user?.fullName}</h1>
+            <span className='text-gray-600 text-sm'>{user.department}.</span>
           </div>
         </div>
 

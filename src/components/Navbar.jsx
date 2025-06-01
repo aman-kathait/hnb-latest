@@ -40,9 +40,9 @@ const Navbar = () => {
             <Link to="/chat" className="sm:inline-block hidden">
               <MessageCircle className="h-6 w-6 text-white hover:text-[#B9FBC0] transition duration-200" />
             </Link>
-            <Link to="/notifications" className="sm:inline-block hidden">
+            {/* <Link to="/notifications" className="sm:inline-block hidden">
               <Bell className="h-6 w-6 text-white hover:text-[#B9FBC0] transition duration-200" />
-            </Link>
+            </Link> */}
             <Link to={`/profile/${user?._id}`} className="sm:inline-block hidden">
               <Avatar className="w-8 h-8 border border-white hover:ring-2 hover:ring-green-400 transition">
                 <AvatarImage src={user?.profilePicture} alt="@user" />
