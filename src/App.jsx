@@ -18,7 +18,7 @@ import { setLikeNotification } from './redux/rtnSlice'
 import ForgotPassword from "./components/auth/ForgotPassword";
 import VerifyResetCode from "./components/auth/VerifyResetCode";
 import ResetPassword from "./components/auth/ResetPassword";
-
+import useGetRTM from '@/hooks/useGetRTM';
 function ProtectedRoute({ children }) {
   const { user } = useSelector((store) => store.auth);
   if (!user) {
@@ -94,6 +94,7 @@ function App() {
   const {user} = useSelector(store=>store.auth);
   const {socket} = useSelector(store=>store.socketio);
   const dispatch = useDispatch();
+  useGetRTM();
   useEffect(()=>{
     if(user){
       const socketio=io("http://localhost:8000",{
@@ -105,6 +106,7 @@ function App() {
       socketio.on('notification', (notification) => {
         dispatch(setLikeNotification(notification));
       });
+      dispatch(setSocket(socketio));
       return ()=>{
         socketio.close();
         dispatch(setSocket(null));

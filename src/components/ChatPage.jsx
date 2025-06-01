@@ -102,7 +102,7 @@ const ChatPage = () => {
                   value={textMessage}
                   onChange={(e) => setTextMessage(e.target.value)}
                   type="text"
-                  className='flex-1'
+                  className='flex-1 '
                   placeholder="Type a message..."
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && textMessage.trim()) {

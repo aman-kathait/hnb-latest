@@ -20,14 +20,16 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-}
+  blacklist: ['socketio'], 
+};
+
 const rootReducer = combineReducers({
   auth:authSlice,
   post:postSlice,
   socketio:socketSlice,
   chat:chatSlice,
   realTimeNotification:rtnSlice,
-  event:eventSlice // Add this line
+  event:eventSlice 
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

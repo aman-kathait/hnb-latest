@@ -105,7 +105,7 @@ const LeftSidebar = () => {
           </Avatar>
         </div>
 
-        <div className="ml-3">
+        <div className="ml-3 max-w-[160px]">
           <div
             className="flex font-semibold cursor-pointer hover:underline text-white"
             onClick={() => sidebarHandler("Profile")}
