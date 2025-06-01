@@ -18,7 +18,8 @@ const Profile = () => {
   useGetUserProfile(userId);
 
   // Add this new hook to get posts specifically for this profile
-  const { posts: profilePosts, loading: postsLoading } = useGetUserPosts(userId);
+  const { posts: profilePosts, loading: postsLoading } =
+    useGetUserPosts(userId);
 
   const [activeTab, setActiveTab] = useState("posts");
 
@@ -71,7 +72,14 @@ const Profile = () => {
           <div className="flex justify-center">
             <Avatar className="w-32 h-32 border-4 border-white shadow-md">
               <AvatarImage src={userProfile?.profilePicture} alt="profile" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>
+                {" "}
+                {userProfile?.fullName
+                  ?.split(" ")
+                  .map((word) => word[0])
+                  .join("")
+                  .toUpperCase()}
+              </AvatarFallback>
             </Avatar>
           </div>
 
@@ -173,10 +181,11 @@ const Profile = () => {
                   userProfile.resumeUrl
                 )}`}
                 target="_blank"
-                rel="noopener noreferrer" 
+                rel="noopener noreferrer"
                 className="bg-purple-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1 ml-2"
               >
-                <FileText size={16} />Resume
+                <FileText size={16} />
+                Resume
               </a>
               {/* <a 
                 href={userProfile.resumeUrl}
@@ -211,13 +220,15 @@ const Profile = () => {
         {/* Posts Grid - now using profilePosts */}
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start m-3">
           {Array.isArray(displayedPost) && displayedPost.length > 0 ? (
-            [...displayedPost].reverse().map((post) => (
-              <Post
-                post={post}
-                key={post?._id}
-                className="w-[48%] sm:w-[30%] md:w-[23%] aspect-square"
-              />
-            ))
+            [...displayedPost]
+              .reverse()
+              .map((post) => (
+                <Post
+                  post={post}
+                  key={post?._id}
+                  className="w-[48%] sm:w-[30%] md:w-[23%] aspect-square"
+                />
+              ))
           ) : (
             <div className="col-span-full text-center py-10 text-gray-500 w-full">
               No posts to display

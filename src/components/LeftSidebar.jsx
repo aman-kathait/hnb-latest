@@ -24,7 +24,9 @@ import { Button } from "./ui/button";
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.auth);
-  const { likeNotification } = useSelector((store) => store.realTimeNotification);
+  const { likeNotification } = useSelector(
+    (store) => store.realTimeNotification
+  );
   const dispatch = useDispatch();
   const [eventOpen, setEventOpen] = useState(false);
   const [open, setOpen] = useState(false);
@@ -48,7 +50,9 @@ const LeftSidebar = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "An unexpected error occurred");
+      toast.error(
+        error.response?.data?.message || "An unexpected error occurred"
+      );
     }
   };
 
@@ -86,14 +90,14 @@ const LeftSidebar = () => {
     { icon: <MessageSquareMore />, text: "Messages" },
     // { icon: <Heart />, text: "Notifications" },
     { icon: <PlusSquare />, text: "Create Post" },
-    ...(user?.role === 'faculty' ? [{ icon: <CalendarDays />, text: "Event Post" }] : []),
+    ...(user?.role === "faculty"
+      ? [{ icon: <CalendarDays />, text: "Event Post" }]
+      : []),
     { icon: <LogOut />, text: "Log Out" },
   ];
 
   const sidebarItems =
-    user?.role === "faculty"
-      ? [...baseSidebarItems,]
-      : baseSidebarItems;
+    user?.role === "faculty" ? [...baseSidebarItems] : baseSidebarItems;
 
   return (
     <div className="hidden md:block fixed top-16 bg-[#EAF4EC] z-10 left-0 px-4 border-r min-w-[20%] h-screen">
@@ -101,7 +105,14 @@ const LeftSidebar = () => {
         <div className="flex" onClick={() => sidebarHandler("Profile")}>
           <Avatar className="w-15 h-15 cursor-pointer">
             <AvatarImage src={user?.profilePicture} alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>
+              {" "}
+              {user?.fullName
+                ?.split(" ")
+                .map((word) => word[0])
+                .join("")
+                .toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </div>
 
@@ -131,9 +142,7 @@ const LeftSidebar = () => {
             return (
               <Popover key={index}>
                 <PopoverTrigger asChild>
-                  <div
-                    className="flex items-center gap-3 relative hover:bg-[#CFE6D8] hover:text-[#134327] cursor-pointer rounded-lg p-3 my-3 mt-4 font-semibold text-[#083015]"
-                  >
+                  <div className="flex items-center gap-3 relative hover:bg-[#CFE6D8] hover:text-[#134327] cursor-pointer rounded-lg p-3 my-3 mt-4 font-semibold text-[#083015]">
                     {item.icon}
                     <span>{item.text}</span>
                     {likeNotification.length > 0 && (
@@ -145,10 +154,15 @@ const LeftSidebar = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-72 z-50">
                   {likeNotification.length === 0 ? (
-                    <p className="text-sm text-gray-500">No new notifications</p>
+                    <p className="text-sm text-gray-500">
+                      No new notifications
+                    </p>
                   ) : (
                     likeNotification.map((notification) => (
-                      <div key={notification.userId} className="flex items-center gap-2 my-2">
+                      <div
+                        key={notification.userId}
+                        className="flex items-center gap-2 my-2"
+                      >
                         <Avatar>
                           <AvatarImage
                             src={notification.userDetails?.profilePicture}

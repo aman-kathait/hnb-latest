@@ -43,15 +43,27 @@ const Navbar = () => {
             {/* <Link to="/notifications" className="sm:inline-block hidden">
               <Bell className="h-6 w-6 text-white hover:text-[#B9FBC0] transition duration-200" />
             </Link> */}
-            <Link to={`/profile/${user?._id}`} className="sm:inline-block hidden">
+            <Link
+              to={`/profile/${user?._id}`}
+              className="sm:inline-block hidden"
+            >
               <Avatar className="w-8 h-8 border border-white hover:ring-2 hover:ring-green-400 transition">
                 <AvatarImage src={user?.profilePicture} alt="@user" />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback>
+                  {user?.fullName
+                    ?.split(" ")
+                    .map((word) => word[0])
+                    .join("")
+                    .toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </Link>
 
             {/* Hamburger Icon for Small Screens */}
-            <button className="sm:hidden" onClick={() => setMenuOpen(prev => !prev)}>
+            <button
+              className="sm:hidden"
+              onClick={() => setMenuOpen((prev) => !prev)}
+            >
               <Menu className="h-6 w-6 text-white hover:text-[#B9FBC0]" />
             </button>
 
