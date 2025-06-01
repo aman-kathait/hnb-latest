@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { AtSign, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner"; // If you're using toast notifications
 import RoleBadge from "./RoleBadge";
+import Post from "./Post"; // Assuming you have a Post component to display posts
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
@@ -17,9 +18,11 @@ const Profile = () => {
 
   // Use the new follow hook
   const { followOrUnfollow, loading } = useFollowUser();
+  const { posts } = useSelector((store) => store.post);
 
   const { userProfile, user } = useSelector((store) => store.auth);
   const isLoggedInUserProfile = user?._id === userProfile?._id;
+  const userPosts = posts.filter(post => post.author.username === user.username);
 
   // Check if the current user is following this profile
   const isFollowing = user?.following?.some(
@@ -35,8 +38,7 @@ const Profile = () => {
   }, [isFollowing]);
 
   const displayedPost =
-    activeTab === "posts" ? userProfile?.posts : userProfile?.bookmarks;
-
+    activeTab === "posts" ? userPosts : userProfile?.bookmarks;
   // Handle follow/unfollow action
   const handleFollowUnfollow = async () => {
     // Toggle local state immediately for better UX
@@ -183,34 +185,21 @@ const Profile = () => {
         </div>
 
         {/* Posts Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 m-3">
-          {Array.isArray(displayedPost) ? [...displayedPost].reverse().map((post) => (
-            <div key={post?._id} className="relative group cursor-pointer">
-              <img
-                src={post.image}
-                alt="post"
-                className="aspect-square object-cover w-full rounded-sm"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <div className="flex items-center space-x-6 text-white">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-5 h-5" />
-                    <span>{post?.likes?.length}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-5 h-5" />
-                    <span>{post?.comments?.length}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )) : (
-            
-            <div className="col-span-full text-center py-10 text-gray-500">
-              No posts to display
-            </div>
-          )}
-        </div>
+<div className="flex flex-wrap gap-1 m-3">
+  {Array.isArray(displayedPost) && displayedPost.length > 0 ? (
+    [...displayedPost].reverse().map((post) => (
+      <Post
+        post={post}
+        key={post?._id}
+        className="relative group cursor-pointer w-[calc(25%-4px)] aspect-square"
+      />
+    ))
+  ) : (
+    <div className="col-span-full text-center py-10 text-gray-500">
+      No posts to display
+    </div>
+  )}
+</div>
       </div>
     </div>
   );

@@ -1,17 +1,17 @@
 import React from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom';
-import SuggestedUsers from './SuggestedUsers';
+import SuggestedUsers from './SuggestedUsers'
 
 const RightSidebar = () => {
   const { user } = useSelector(store => store.auth);
+
   return (
-    <div className='w-fit my-10 pr-10 hidden md:block mt-16 '>
-     
-      <SuggestedUsers/>
-    </div>
+    <aside className="hidden md:block md:w-64 lg:w-72 xl:w-80 mt-16 pr-6">
+      <div className="w-full max-w-xs">
+        <SuggestedUsers />
+      </div>
+    </aside>
   )
 }
 
-export default RightSidebar
+export default RightSidebar;

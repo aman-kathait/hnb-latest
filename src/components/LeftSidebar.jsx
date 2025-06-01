@@ -80,20 +80,15 @@ const LeftSidebar = () => {
     }
   };
 
-  const baseSidebarItems = [
-    { icon: <Home />, text: "Home" },
-    { icon: <Megaphone />, text: "Announcements" },
-    { icon: <MessageSquareMore />, text: "Messages" },
-    { icon: <Heart />, text: "Notifications" },
-    { icon: <PlusSquare />, text: "Create Post" },
-    ...(user?.role === 'faculty' ? [{ icon: <PlusSquare />, text: "Event Post" }] : []),
-    { icon: <LogOut />, text: "Log Out" },
+  const sidebarItems = [
+    { icon: <Home size={20} />, text: "Home" },
+    { icon: <Megaphone size={20} />, text: "Announcements" },
+    { icon: <MessageSquareMore size={20} />, text: "Messages" },
+    { icon: <Heart size={20} />, text: "Notifications" },
+    { icon: <PlusSquare size={20} />, text: "Create Post" },
+    ...(user?.role === 'faculty' ? [{ icon: <CalendarDays size={20} />, text: "Event Post" }] : []),
+    { icon: <LogOut size={20} />, text: "Log Out" },
   ];
-
-  const sidebarItems =
-    user?.role === "faculty"
-      ? [...baseSidebarItems, { icon: <CalendarDays />, text: "Event Post" }]
-      : baseSidebarItems;
 
   return (
     <div className="hidden md:block fixed top-16 bg-[#EAF4EC] z-10 left-0 px-4 border-r min-w-[20%] h-screen">
@@ -186,10 +181,10 @@ const LeftSidebar = () => {
 
       <CreatePost open={open} setOpen={setOpen} />
       {/* uncomment next line to open create event section for every role */}
-      <EventPost open={eventOpen} setOpen={setEventOpen} />
-      {/* {user?.role === "faculty" && (
+      {/* <EventPost open={eventOpen} setOpen={setEventOpen} /> */}
+      {user?.role === "faculty" && (
         <EventPost open={eventOpen} setOpen={setEventOpen} />
-      )} */}
+      )}
     </div>
   );
 };
