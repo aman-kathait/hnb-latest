@@ -19,6 +19,8 @@ import ForgotPassword from "./components/auth/ForgotPassword";
 import VerifyResetCode from "./components/auth/VerifyResetCode";
 import ResetPassword from "./components/auth/ResetPassword";
 import useGetRTM from '@/hooks/useGetRTM';
+import TermsAndConditions from './components/TermsAndCondition'
+import PrivacyPolicy from './components/PrivacyPolicy'
 function ProtectedRoute({ children }) {
   const { user } = useSelector((store) => store.auth);
   if (!user) {
@@ -88,6 +90,14 @@ const browserRouter = createBrowserRouter([
     path: '*',
     element:<Error/>
   },
+  {
+    path:'terms',
+    element:<TermsAndConditions />
+  },
+  {
+    path:'privacy',
+    element:<PrivacyPolicy />
+  }
 ])
 
 function App() {
