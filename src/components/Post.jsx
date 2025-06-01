@@ -15,6 +15,7 @@ import { Badge } from './ui/badge'
 import RoleBadge from "./RoleBadge";
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { Link } from 'react-router-dom'
+import useFollowUser from '@/hooks/useFollowUser';
 const Post = ({ post }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
@@ -26,6 +27,8 @@ const Post = ({ post }) => {
     const [postLike, setPostLike] = useState(post.likes.length);
     const [comment, setComment] = useState(post.comments);
     const dispatch = useDispatch();
+    const { followOrUnfollow, loading: followLoading } = useFollowUser();
+    const [loadingStates, setLoadingStates] = useState({});
     
     if (!post || !post.author) {
         return (
@@ -34,6 +37,16 @@ const Post = ({ post }) => {
             </div>
         );
     }
+     const handleUnfollow = async () => {
+        try {
+            const result = await followOrUnfollow(post.author._id);
+            if (result.success) {
+                toast.success(`You have unfollowed ${post.author.fullName}`);
+            }
+        } catch (err) {
+            toast.error('Failed to unfollow user');
+        }
+    };
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -105,11 +118,9 @@ const Post = ({ post }) => {
             toast.error(error.response.data.messsage);
         }
     }
-
-    const bookmarkHandler = async () => {
+     const bookmarkHandler = async () => {
         try {
             const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
-            console.log(res.data);
             if(res.data.success){
                 toast.success(res.data.message);
             }
@@ -165,9 +176,16 @@ const Post = ({ post }) => {
                     </DialogTrigger>
                     <DialogContent className="flex flex-col items-center text-sm text-center">
                         {post?.author?._id !== user?._id && 
-                            <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+                            <Button 
+                                onClick={handleUnfollow} 
+                                variant='ghost' 
+                                className="cursor-pointer w-fit text-[#ED4956] font-bold"
+                                disabled={followLoading}
+                            >
+                                {followLoading ? 'Processing...' : 'Unfollow'}
+                            </Button>
                         }
-                        <Button variant='ghost' className="cursor-pointer w-fit">Add to favorites</Button>
+                        
                         {user && user?._id === post?.author._id && 
                             <Button onClick={deletePostHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>
                         }
