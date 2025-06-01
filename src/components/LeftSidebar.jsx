@@ -84,15 +84,15 @@ const LeftSidebar = () => {
     { icon: <Home />, text: "Home" },
     { icon: <Megaphone />, text: "Announcements" },
     { icon: <MessageSquareMore />, text: "Messages" },
-    { icon: <Heart />, text: "Notifications" },
+    // { icon: <Heart />, text: "Notifications" },
     { icon: <PlusSquare />, text: "Create Post" },
-    ...(user?.role === 'faculty' ? [{ icon: <PlusSquare />, text: "Event Post" }] : []),
+    ...(user?.role === 'faculty' ? [{ icon: <CalendarDays />, text: "Event Post" }] : []),
     { icon: <LogOut />, text: "Log Out" },
   ];
 
   const sidebarItems =
     user?.role === "faculty"
-      ? [...baseSidebarItems, { icon: <CalendarDays />, text: "Event Post" }]
+      ? [...baseSidebarItems,]
       : baseSidebarItems;
 
   return (
