@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const authSlice = createSlice({
+const initialState = {
+  user: null, // user object will contain resumeUrl and resumeName
+  suggestedUsers: [],
+  userProfile: null,
+  selectedUser: null,
+  userProfiles: [],
+};
+
+export const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    suggestedUsers: [],
-    userProfile: null,
-    selectedUser: null,
-    userProfiles:[],
-  },
+  initialState,
   reducers: {
     setAuthUser: (state, action) => {
       state.user = action.payload;
+      // This will now include resumeUrl and resumeName from the payload
     },
     setSuggestedUsers: (state, action) => {
       //  console.log("Dispatching setUserProfiles with payload:", action.payload);
@@ -31,9 +34,14 @@ const authSlice = createSlice({
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
     },
-    
-    
   },
 });
-export const { setAuthUser,updateCurrentUser,setSuggestedUsers,setUserProfile,setSelectedUser,setUserProfiles} = authSlice.actions;
+export const {
+  setAuthUser,
+  updateCurrentUser,
+  setSuggestedUsers,
+  setUserProfile,
+  setSelectedUser,
+  setUserProfiles,
+} = authSlice.actions;
 export default authSlice.reducer;

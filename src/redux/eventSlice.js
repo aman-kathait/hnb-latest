@@ -87,6 +87,57 @@ const eventSlice = createSlice({
           likes: state.selectedEvent.likes.filter(id => id !== userId)
         };
       }
+    },
+    updateEventInterest: (state, action) => {
+      const { eventId, userId, isInterested } = action.payload;
+      
+      // Update events array
+      state.events = state.events.map(event => {
+        if (event._id === eventId) {
+          let updatedInterestedUsers = [...(event.interestedUsers || [])];
+          
+          if (isInterested) {
+            // Add the user if not already interested
+            if (!updatedInterestedUsers.some(entry => entry.user === userId)) {
+              updatedInterestedUsers.push({ 
+                user: userId, 
+                timestamp: new Date().toISOString() 
+              });
+            }
+          } else {
+            // Remove the user if interested
+            updatedInterestedUsers = updatedInterestedUsers.filter(
+              entry => entry.user !== userId
+            );
+          }
+          
+          return { ...event, interestedUsers: updatedInterestedUsers };
+        }
+        return event;
+      });
+      
+      // Also update selectedEvent if it matches
+      if (state.selectedEvent && state.selectedEvent._id === eventId) {
+        let updatedInterestedUsers = [...(state.selectedEvent.interestedUsers || [])];
+        
+        if (isInterested) {
+          if (!updatedInterestedUsers.some(entry => entry.user === userId)) {
+            updatedInterestedUsers.push({ 
+              user: userId, 
+              timestamp: new Date().toISOString() 
+            });
+          }
+        } else {
+          updatedInterestedUsers = updatedInterestedUsers.filter(
+            entry => entry.user !== userId
+          );
+        }
+        
+        state.selectedEvent = { 
+          ...state.selectedEvent, 
+          interestedUsers: updatedInterestedUsers 
+        };
+      }
     }
   }
 });
@@ -100,7 +151,8 @@ export const {
   updateEvent,
   deleteEvent,
   likeEvent,
-  unlikeEvent
+  unlikeEvent,
+  updateEventInterest
 } = eventSlice.actions;
 
 export default eventSlice.reducer;

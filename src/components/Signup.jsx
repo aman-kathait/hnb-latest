@@ -39,6 +39,7 @@ const Signup = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
+  // Updated to send all form data during OTP request
   const sendOtpHandler = async (e) => {
     e.preventDefault();
 
@@ -58,10 +59,15 @@ const Signup = () => {
       setOtpLoading(true);
       const res = await axios.post(
         "http://localhost:8000/api/v1/user/send-otp",
-        { email: input.email,
+        { 
+          firstname: input.firstname,
+          lastname: input.lastname,
+          department: input.department,
+          year: input.year,
+          email: input.email,
+          password: input.password,
           acceptedTerms: termsAccepted 
-
-         },
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -86,6 +92,7 @@ const Signup = () => {
     }
   };
 
+  // Updated to only send email and OTP for registration
   const signupHandler = async (e) => {
     e.preventDefault();
 
@@ -98,9 +105,10 @@ const Signup = () => {
       setLoading(true);
       const res = await axios.post(
         "http://localhost:8000/api/v1/user/register",
-        { ...input, otp,
-          acceptedTerms: termsAccepted   // check 
-         },
+        { 
+          email: input.email, 
+          otp: otp
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -118,7 +126,6 @@ const Signup = () => {
           year: "",
           email: "",
           password: "",
-          tc: false,
         });
         setTermsAccepted(false);
         setOtpSent(false);
@@ -129,6 +136,42 @@ const Signup = () => {
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Add a function to resend OTP if needed
+  const resendOtpHandler = async () => {
+    try {
+      setOtpLoading(true);
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/user/send-otp",
+        { 
+          firstname: input.firstname,
+          lastname: input.lastname,
+          department: input.department,
+          year: input.year,
+          email: input.email,
+          password: input.password,
+          acceptedTerms: termsAccepted 
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      
+      if (res.data.success) {
+        toast.success("OTP resent to your email!");
+      } else {
+        toast.error(res.data.message || "Failed to resend OTP");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to resend OTP");
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -300,11 +343,21 @@ const Signup = () => {
               className="my-2 h-9"
               placeholder="Enter 4-digit OTP"
               maxLength={4}
-              
+              required
             />
-            <p className="text-sm text-muted-foreground mt-1">
-              We've sent a 4-digit code to your email.
-            </p>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-sm text-muted-foreground">
+                We've sent a 4-digit code to your email.
+              </p>
+              <button 
+                type="button" 
+                onClick={resendOtpHandler}
+                disabled={otpLoading}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Resend
+              </button>
+            </div>
           </div>
         )}
 
@@ -314,15 +367,9 @@ const Signup = () => {
             checked={termsAccepted}
             onCheckedChange={(checked) => {
               setTermsAccepted(checked);
-              setInput({ ...input, tc: checked });
             }}
             disabled={otpSent}
           />
-
-
-
-          {/* Add Term and Condition Page */}
-
 
           <div className="grid gap-1.5 leading-none">
             <label htmlFor="terms" className="text-sm font-medium leading-none">
@@ -339,22 +386,30 @@ const Signup = () => {
               </Link>.
             </p>
           </div>
-
-
-
         </div>
 
         {otpSent ? (
-          loading ? (
-            <Button className="h-10 w-full" disabled>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
+          <div className="flex flex-col gap-3">
+            {loading ? (
+              <Button className="h-10 w-full" disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </Button>
+            ) : (
+              <Button className="h-10 w-full" type="submit">
+                Complete Registration
+              </Button>
+            )}
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="h-10 w-full"
+              onClick={() => setOtpSent(false)}
+            >
+              Back to Form
             </Button>
-          ) : (
-            <Button className="h-10 w-full" type="submit">
-              Sign Up
-            </Button>
-          )
+          </div>
         ) : otpLoading ? (
           <Button className="h-10 w-full" disabled>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

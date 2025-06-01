@@ -20,6 +20,9 @@ const Announcement = ({ announcement }) => {
     const [liked, setLiked] = useState(announcement.likes.includes(user?._id) || false);
     const [announcementLike, setAnnouncementLike] = useState(announcement.likes.length);
     const [comment, setComment] = useState(announcement.comments);
+    const [isInterested, setIsInterested] = useState(
+        announcement.interestedUsers?.some(entry => entry.user === user?._id) || false
+    );
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
@@ -107,6 +110,57 @@ const Announcement = ({ announcement }) => {
             console.log(error);
         }
     }
+
+    // Update this handler in your Announcement.jsx
+    const handleInterestToggle = async () => {
+        try {
+            const res = await axios.post(
+                `http://localhost:8000/api/v1/event/${announcement._id}/interest`, // Note: Using "event" instead of "announcement"
+                {},
+                { withCredentials: true }
+            );
+
+            if (res.data.success) {
+                setIsInterested(!isInterested);
+                
+                // Update Redux store
+                dispatch(updateAnnouncementInterest({
+                    announcementId: announcement._id,
+                    userId: user._id,
+                    isInterested: !isInterested
+                }));
+                
+                toast.success(res.data.message);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to update interest");
+        }
+    };
+
+    // Add this handler for generating report
+    const handleGenerateReport = async () => {
+        try {
+            const res = await axios.get(
+                `http://localhost:8000/api/v1/announcement/${announcement._id}/report`,
+                { withCredentials: true }
+            );
+
+            if (res.data.success) {
+                toast.success("Report has been sent to your email");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to generate report");
+        }
+    };
+
+    console.log("Announcement props:", {
+        id: announcement._id,
+        interestedUsers: announcement.interestedUsers,
+        isCurrentUserInterested: announcement.interestedUsers?.some(entry => entry.user === user?._id),
+        isCreator: user?._id === announcement.author._id
+    });
 
     return (
         <div className='my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24'>
@@ -210,7 +264,7 @@ const Announcement = ({ announcement }) => {
             <CommentDialog open={open} setOpen={setOpen} />
 
             {/* Add comment */}
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between mb-4'>
                 <input
                     type="text"
                     placeholder='Add a comment...'
@@ -219,6 +273,55 @@ const Announcement = ({ announcement }) => {
                     className='outline-none text-sm w-full'
                 />
                 {text && <span onClick={commentHandler} className='text-[#3BADF8] cursor-pointer'>Post</span>}
+            </div>
+
+            {/* Interest & Report Buttons Section - FIXED SECTION */}
+            <div className='flex flex-wrap items-center gap-3 mt-4 border-t pt-3'>
+                {/* Interest Toggle Button */}
+                <Button 
+                    onClick={handleInterestToggle}
+                    variant={isInterested ? "default" : "outline"}
+                    className={`flex items-center gap-2 ${
+                        isInterested 
+                            ? 'bg-green-600 hover:bg-green-700 text-white' 
+                            : 'border-green-600 text-green-600 hover:bg-green-50'
+                    }`}
+                >
+                    {isInterested ? (
+                        <>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            Interested
+                        </>
+                    ) : (
+                        <>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            Show Interest
+                        </>
+                    )}
+                    <span className="text-xs ml-1">
+                        ({announcement.interestedUsers?.length || 0})
+                    </span>
+                </Button>
+
+                {/* Report Generation Button - Only visible for announcement creator */}
+                {user?._id === announcement.author._id && (
+                    <Button
+                        onClick={handleGenerateReport}
+                        variant="outline"
+                        className="flex items-center gap-2 border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Get Interest Report
+                    </Button>
+                )}
             </div>
         </div>
     )

@@ -15,6 +15,10 @@ import { use } from 'react'
 import { setSocket } from './redux/socketSlice'
 import { useEffect } from 'react'
 import { setLikeNotification } from './redux/rtnSlice'
+import ForgotPassword from "./components/auth/ForgotPassword";
+import VerifyResetCode from "./components/auth/VerifyResetCode";
+import ResetPassword from "./components/auth/ResetPassword";
+
 function ProtectedRoute({ children }) {
   const { user } = useSelector((store) => store.auth);
   if (!user) {
@@ -69,6 +73,18 @@ const browserRouter = createBrowserRouter([
     element: <Signup />
   },
   {
+    path: '/forgot-password',
+    element: <ForgotPassword />
+  },
+  {
+    path: '/verify-reset-code',
+    element: <VerifyResetCode />
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />
+  },
+  {
     path: '*',
     element:<Error/>
   },
@@ -105,4 +121,4 @@ function App() {
   )
 }
 
-export default App 
+export default App

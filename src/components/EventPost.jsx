@@ -12,6 +12,7 @@ import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPosts } from '@/redux/postSlice'
 import { format, addDays, isBefore, isAfter, parseISO } from 'date-fns'
+import { addEvent } from '@/redux/eventSlice'
 
 const EventPost = ({ open, setOpen }) => {
   const imageRef = useRef()
@@ -127,24 +128,35 @@ const EventPost = ({ open, setOpen }) => {
     formData.append("isEvent", "true")
     
     try {
-      setLoading(true)
-      const res = await axios.post('http://localhost:8000/api/v1/post/addpost', formData, {
+      setLoading(true);
+      const res = await axios.post('http://localhost:8000/api/v1/event/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
         withCredentials: true
-      })
+      });
+      
+      console.log("Response:", res.data); // Add this for debugging
       
       if (res.data.success) {
-        dispatch(setPosts([res.data.post, ...posts]))
-        toast.success(res.data.message)
-        setOpen(false)
-        resetForm()
+        // Make sure you're using the correct property name
+        if (res.data.event) {
+          dispatch(addEvent(res.data.event));
+          toast.success(res.data.message);
+          setOpen(false);
+          resetForm();
+        } else {
+          console.error("Event missing from response:", res.data);
+          toast.error("Event created but data invalid");
+        }
+      } else {
+        toast.error(res.data.message || "Failed to create event");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong")
+      console.error("Error creating event:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -268,3 +280,18 @@ const EventPost = ({ open, setOpen }) => {
 }
 
 export default EventPost
+
+// In your eventSlice.js
+addEvent: (state, action) => {
+  try {
+    // Safely add the new event to the beginning of the array
+    const newEvent = action.payload;
+    if (newEvent && newEvent._id) { // Make sure it's a valid event
+      state.events = [newEvent, ...state.events];
+    } else {
+      console.error("Invalid event data:", newEvent);
+    }
+  } catch (error) {
+    console.error("Error in addEvent reducer:", error);
+  }
+}

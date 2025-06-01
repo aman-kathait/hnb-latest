@@ -136,7 +136,7 @@ const Post = ({ post }) => {
     };
 
     return (
-        <div className='my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:ml-24'>
+        <div className='my-8 w-full max-w-sm mx-auto sm:max-w-xl p-4 rounded-2xl shadow-lg sm:m-4'>
             {/* Post Header */}
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
