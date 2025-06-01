@@ -1,4 +1,4 @@
-import Signup from './components/signup.jsx'
+import Signup from './components/Signup.jsx'
 import MainLayout from './components/MainLayout.jsx'
 import Home from './components/Home.jsx'
 import Login from './components/Login.jsx'
