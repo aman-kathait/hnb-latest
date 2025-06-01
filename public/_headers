@@ -1,0 +1,2 @@
+/*
+  Content-Security-Policy: connect-src 'self' https://hnbconnectbackend.vercel.app wss://hnbconnectbackend.vercel.app ws://hnbconnectbackend.vercel.app;

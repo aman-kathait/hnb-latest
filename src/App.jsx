@@ -21,6 +21,7 @@ import ResetPassword from "./components/auth/ResetPassword.jsx";
 import useGetRTM from '@/hooks/useGetRTM';
 import TermsAndConditions from './components/TermsAndCondition.jsx'
 import PrivacyPolicy from './components/PrivacyPolicy.jsx'
+import { SOCKET_URL } from './config/api';  // Add this import
 function ProtectedRoute({ children }) {
   const { user } = useSelector((store) => store.auth);
   if (!user) {
@@ -106,26 +107,29 @@ function App() {
   const dispatch = useDispatch();
   useGetRTM();
   useEffect(()=>{
-    if(user){
-      const socketio=io("http://localhost:8000",{
-        query:{
-          userId:user._id
+    if(user) {
+      const socketio = io(SOCKET_URL, {
+        query: {
+          userId: user._id
         },
         transports: ["websocket"],
       });
+      
       socketio.on('notification', (notification) => {
         dispatch(setLikeNotification(notification));
       });
+      
       dispatch(setSocket(socketio));
-      return ()=>{
+      
+      return () => {
         socketio.close();
         dispatch(setSocket(null));
-      }
-    }else if(socket){
+      };
+    } else if(socket) {
       socket.close();
       dispatch(setSocket(null));
     }
-  },[user,dispatch])
+  }, [user, dispatch])
   return (
     <>
       <RouterProvider router={browserRouter} />
