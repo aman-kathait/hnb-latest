@@ -33,25 +33,46 @@ const Signup = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({
+    isValid: false,
+    message: "",
+  });
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
+    if (e.target.name === "password") {
+      validatePassword(e.target.value);
+    }
   };
 
-  // Updated to send all form data during OTP request
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const isValid = passwordRegex.test(password);
+    
+    setPasswordStrength({
+      isValid,
+      message: isValid 
+        ? "Password is strong" 
+        : "Password must have at least 8 characters, including uppercase, lowercase, numbers and special characters",
+    });
+  };
+
   const sendOtpHandler = async (e) => {
     e.preventDefault();
 
-    // Check if terms and conditions are accepted
     if (!termsAccepted) {
       toast.error("Please accept the terms and conditions");
       return;
     }
     
-    // Basic validation
     if (!input.email || !input.password || !input.firstname || !input.lastname || !input.department || !input.year) {
       toast.error("Please fill all the required fields.");
+      return;
+    }
+
+    if (!passwordStrength.isValid) {
+      toast.error(passwordStrength.message);
       return;
     }
 
@@ -76,12 +97,10 @@ const Signup = () => {
         }
       );
       
-      // Only set OTP sent to true if the request was successful
       if (res.data.success) {
         setOtpSent(true);
         toast.success("OTP sent to your email, check!");
       } else {
-        // Handle case where API returns success: false but no error
         toast.error(res.data.message || "Failed to send OTP");
       }
     } catch (error) {
@@ -92,7 +111,6 @@ const Signup = () => {
     }
   };
 
-  // Updated to only send email and OTP for registration
   const signupHandler = async (e) => {
     e.preventDefault();
 
@@ -139,7 +157,6 @@ const Signup = () => {
     }
   };
 
-  // Add a function to resend OTP if needed
   const resendOtpHandler = async () => {
     try {
       setOtpLoading(true);
@@ -201,7 +218,6 @@ const Signup = () => {
               value={input.firstname}
               onChange={changeEventHandler}
               className="my-2 h-9"
-            
               disabled={otpSent}
             />
           </div>
@@ -213,7 +229,6 @@ const Signup = () => {
               value={input.lastname}
               onChange={changeEventHandler}
               className="my-2 h-9"
-              
               disabled={otpSent}
             />
           </div>
@@ -226,7 +241,6 @@ const Signup = () => {
                 setInput({ ...input, department: value })
               }
               value={input.department}
-              
               disabled={otpSent}
             >
               <SelectTrigger className="w-full text-black font-semibold sm:font-normal">
@@ -283,7 +297,6 @@ const Signup = () => {
             <Select
               onValueChange={(value) => setInput({ ...input, year: value })}
               value={input.year}
-              
               disabled={otpSent}
             >
               <SelectTrigger className="w-full font-semibold text-black">
@@ -292,7 +305,7 @@ const Signup = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Year</SelectLabel>
-                  {Array.from({ length: 2036 - 2000 }, (_, i) => {
+                  {Array.from({ length: (new Date().getFullYear() + 3) - 2000 }, (_, i) => {
                     const year = 2000 + i;
                     return (
                       <SelectItem key={year} value={year.toString()}>
@@ -315,7 +328,6 @@ const Signup = () => {
             onChange={changeEventHandler}
             placeholder="@hnbgu.edu.in"
             className="my-2 h-9"
-            
             disabled={otpSent}
           />
         </div>
@@ -328,9 +340,13 @@ const Signup = () => {
             value={input.password}
             onChange={changeEventHandler}
             className="my-2 h-9"
-            
             disabled={otpSent}
           />
+          {input.password && (
+            <p className={`text-xs mt-1 ${passwordStrength.isValid ? "text-green-600" : "text-red-600"}`}>
+              {passwordStrength.message}
+            </p>
+          )}
         </div>
 
         {otpSent && (
